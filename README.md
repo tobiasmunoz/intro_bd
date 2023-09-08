@@ -1,1 +1,1 @@
-# intro_bd
+# Introduccion a la base de datos

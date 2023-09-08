@@ -120,3 +120,5 @@ SELECT T."Name" track
 FROM "Track" T
 WHERE T."Name" IN ( SELECT A."Title" FROM "Album" A)
 ;
+
+-- 14 Terminar

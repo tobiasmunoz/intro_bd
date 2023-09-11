@@ -139,7 +139,7 @@ GROUP BY C."FirstName", C."LastName"
 ;
 
 -- l) Obtener los álbumes que tiene al menos un track en TODAS las PlayLists.
-
+-- este no esta bien...
 
 SELECT DISTINCT Al."AlbumId", Al."Title"
 FROM "Album" Al
@@ -160,7 +160,47 @@ WHERE Al."AlbumId" IN (
 
 -- m) Obtener los artistas que tienen más álbumes en PlayList
 
+
+SELECT Ar."Name", COUNT(A."AlbumId") cant_albums
+FROM "Artist" Ar
+JOIN "Album" A ON A."ArtistId" = Ar."ArtistId"
+JOIN "Track" T ON T."AlbumId" = A."AlbumId"
+GROUP BY Ar."Name"
+ORDER BY cant_albums DESC
+;
+
+
 -- n) Obtener los playlist que no contengan ningún track de
 -- los álbumes de los artistas “Black Sabbath” o “Chico Buarque”
 
+SELECT DISTINCT P."PlaylistId", P."Name"
+FROM "Playlist" P
+JOIN "PlaylistTrack" PT ON PT."PlaylistId" = P."PlaylistId"
+JOIN "Track" T ON T."TrackId" = PT."TrackId"
+JOIN "Album" A ON A."AlbumId" = T."AlbumId"
+WHERE T."AlbumId" NOT IN (
+  SELECT A."AlbumId" FROM "Album" A
+  JOIN "Artist" Ar ON Ar."ArtistId" = A."ArtistId"
+  WHERE Ar."Name" IN ('Black Sabbath','Chico Buarque')
+)
+;
+
 -- o) Obtener los clientes que compraron tracks de un único género
+
+SELECT C."CustomerId", C."FirstName", C."LastName", generos_cliente.cant_gen
+FROM "Customer" C
+JOIN ( SELECT I."CustomerId", COUNT( DISTINCT T."GenreId" ) cant_gen FROM "Invoice" I
+	   JOIN "InvoiceLine" IL ON IL."InvoiceId" = I."InvoiceId"
+	   JOIN "Track" T ON T."TrackId" = IL."TrackId"
+       GROUP BY I."CustomerId"
+     ) AS generos_cliente ON C."CustomerId" = generos_cliente."CustomerId"
+--WHERE generos_cliente.cant_gen = 1
+-- No hay gente que haya comprado tracks de un unico genero
+;
+
+
+
+
+
+
+
